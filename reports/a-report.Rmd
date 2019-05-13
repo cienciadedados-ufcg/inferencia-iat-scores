@@ -1,0 +1,185 @@
+---
+title: "REPLACE ME"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(ggbeeswarm)
+source(here::here("code/lib.R"))
+theme_set(theme_bw())
+
+knitr::opts_chunk$set(tidy = FALSE,
+                      fig.width = 6,
+                      fig.height = 5)
+
+```
+
+```{r read}
+iat = read_csv(here::here("data/Math_Gender_IAT_SDSU.csv"))
+
+glimpse(iat)
+```
+
+```{r}
+iat %>% 
+    ggplot(aes(x = Gender, y = IAT_Score)) + 
+    geom_quasirandom(width = .2)
+```
+
+IAT: 0.15, 0.35, and 0.65 are considered small, medium, and large level of bias for individual scores.
+
+
+```{r}
+iat %>% 
+    ggplot(aes(x = Gender, y = IAT_Score)) + 
+    geom_quasirandom(width = .1) + 
+    stat_summary(geom = "point", fun.y = "mean", color = "red", size = 3)
+```
+
+```{r}
+iat %>% 
+    group_by(Gender) %>% 
+    summarise(media = mean(IAT_Score)) %>% 
+    summarise(male_female_diff = diff(media))
+```
+
+
+
+
+```{r}
+library(coin)
+oneway_test(IAT_Score ~ as.factor(Gender), 
+            data = iat, 
+            distribution = "exact")
+```
+
+```{r}
+
+```
+
+
+```{r}
+library(resample)
+
+b1 = bootstrap2(iat$IAT_Score, 
+               treatment = iat$Gender,
+               mean)
+CI.percentile(b1, probs = c(.025, .975))
+```
+
+
+
+------
+
+```{r}
+iat_ithaca = read_csv(here::here("data/Math_Gender_IAT_Ithaca.csv")) %>% 
+    filter(!is.na(Gender), !is.na(IAT_Score))
+
+glimpse(iat_ithaca)
+```
+
+```{r}
+iat_ithaca %>% 
+    ggplot(aes(x = Gender, y = IAT_Score)) + 
+    geom_quasirandom(width = .2)
+```
+
+IAT: 0.15, 0.35, and 0.65 are considered small, medium, and large level of bias for individual scores.
+
+
+```{r}
+iat_ithaca %>% 
+    ggplot(aes(x = Gender, y = IAT_Score)) + 
+    geom_quasirandom(width = .1) + 
+    stat_summary(geom = "point", fun.y = "mean", color = "red", size = 3)
+```
+
+```{r}
+iat_ithaca %>% 
+    group_by(Gender) %>% 
+    summarise(media = mean(IAT_Score)) %>% 
+    summarise(male_female_diff = diff(media))
+```
+
+
+
+```{r}
+library(coin)
+oneway_test(IAT_Score ~ as.factor(Gender), 
+            data = iat_ithaca, 
+            distribution = "exact")
+```
+
+```{r}
+library(resample)
+
+b2 = bootstrap2(iat_ithaca$IAT_Score, 
+               treatment = iat_ithaca$Gender,
+               mean)
+CI.percentile(b2, probs = c(.025, .975))
+```
+
+
+
+
+------
+
+# Lab 3
+
+```{r}
+iat_csun = read_csv(here::here("data/csun.csv"))
+names(iat_csun) = c("session_id", "referrer", "Gender", "IAT_Score", "iat_exclude")
+
+glimpse(iat_csun)
+```
+
+```{r}
+iat_csun %>% 
+    ggplot(aes(x = Gender, y = IAT_Score)) + 
+    geom_quasirandom(width = .2)
+```
+
+IAT: 0.15, 0.35, and 0.65 are considered small, medium, and large level of bias for individual scores.
+
+
+```{r}
+iat_csun %>% 
+    ggplot(aes(x = Gender, y = IAT_Score)) + 
+    geom_quasirandom(width = .1) + 
+    stat_summary(geom = "point", fun.y = "mean", color = "red", size = 3)
+```
+
+
+
+
+```{r}
+library(coin)
+oneway_test(IAT_Score ~ as.factor(Gender), 
+            data = iat_csun)
+```
+
+```{r}
+library(resample)
+
+b = bootstrap2(iat_csun$IAT_Score, 
+               treatment = iat_csun$Gender,
+               mean)
+CI.percentile(b, probs = c(.025, .975))
+```
+
+
+```{r}
+iat_csun %>% 
+    group_by(Gender) %>% 
+    summarise(media = mean(IAT_Score)) %>% 
+    summarise(male_female_diff = diff(media))
+```
+
+
+
+
