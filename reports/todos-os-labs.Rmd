@@ -1,0 +1,156 @@
+---
+title: "Análise de uma replicação"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(broom)
+library(ggbeeswarm)
+library(gridExtra)
+theme_set(theme_bw())
+
+knitr::opts_chunk$set(tidy = FALSE,
+                      fig.width = 6,
+                      fig.height = 5)
+
+```
+
+# Sobre IAT
+
+IAT: 0.15, 0.35, and 0.65 are considered small, medium, and large level of bias for individual scores.
+
+Positive means bias towards arts / against Math.
+
+# Análise de uma replicação
+
+```{r}
+iats <-
+    list.files(here::here("data"), pattern = "*.csv") %>% 
+    map_df(~read_csv(here::here("data", .), col_types = "cccdc"))
+
+iats = iats %>% 
+    mutate(sex = factor(sex, levels = c("m", "f"), ordered = TRUE))
+glimpse(iats)
+```
+
+```{r}
+iats %>%
+    ggplot(aes(x = d_art, fill = sex, color = sex)) +
+    geom_histogram(binwidth = .2, alpha = .4) +
+    geom_rug() +
+    facet_grid(sex ~ ., scales = "free_y") + 
+    theme(legend.position = "None")
+```
+
+
+```{r}
+iats %>% 
+    ggplot(aes(x = sex, y = d_art)) + 
+    geom_violin(size = .7, alpha = .4) + 
+    geom_boxplot(width = .1, coef = 1000)
+```
+
+
+
+```{r}
+iats %>% 
+    ggplot(aes(x = sex, y = d_art)) + 
+    geom_quasirandom(width = .25) + 
+    stat_summary(geom = "point", fun.y = "mean", color = "red", size = 5)
+```
+
+##### Qual a diferença na amostra
+
+```{r}
+iats %>% 
+    group_by(referrer, sex) %>% 
+    summarise(media = mean(d_art), n = n())
+```
+
+
+```{r}
+agrupado = iats %>% 
+        group_by(referrer, sex) %>% 
+        summarise(media = mean(d_art))
+
+theta1 <- function(d, s) {
+    m = mean(d[s == "m"])
+    f = mean(d[s == "f"])
+    m - f
+}
+
+diferencas = iats %>% 
+    group_by(referrer) %>% 
+    summarise(diff = theta1(d_art, sex)) 
+```
+
+```{r}
+diferencas %>% 
+    ggplot(aes(x = reorder(referrer, diff), y = diff)) + 
+    geom_point() + 
+    coord_flip()
+```
+
+
+
+#### Comparação via ICs
+
+```{r}
+library(boot)
+
+theta <- function(d, i) {
+    agrupado = d %>% 
+        slice(i) %>% 
+        group_by(sex) %>% 
+        summarise(media = mean(d_art))
+    m = agrupado %>% filter(sex == "m") %>% pull(media)
+    f = agrupado %>% filter(sex == "f") %>% pull(media)
+    m - f
+}
+
+nested = iats %>% 
+    group_by(referrer) %>% 
+    mutate(n = n()) %>% 
+    filter(n > 10) %>% 
+    ungroup() %>% 
+    nest(-referrer) 
+    
+boots = nested %>% 
+    mutate(booted = map(data, ~ boot(.x, 
+                                     statistic = theta, 
+                                     R = 200)))
+
+boots = boots %>%
+    mutate(ci = map(
+        booted,
+        ~ tidy(
+            .x,
+            conf.level = .95,
+            conf.method = "basic",
+            conf.int = TRUE
+        )
+    )) %>%
+    unnest(ci)
+
+glimpse(boots)
+```
+
+```{r}
+boots %>%
+    ggplot(aes(
+        x = referrer,
+        y = statistic,
+        ymin = conf.low,
+        ymax = conf.high
+    )) +
+    geom_pointrange() +
+    geom_point(size = 3) + 
+    labs(x = "Diferença", 
+         y = "IAT homens - mulheres") + 
+    coord_flip()
+```
+

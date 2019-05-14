@@ -4,6 +4,8 @@ output:
     html_document:
     df_print: paged
 theme: sandstone
+params: 
+    arquivo_dados: "data/sdsu .csv"
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -28,7 +30,7 @@ Positive means bias towards arts / against Math.
 # Análise de uma replicação
 
 ```{r}
-iat = read_csv(here::here("data/csun.csv"), col_types = "cccdc")
+iat = read_csv(here::here(params$arquivo_dados), col_types = "cccdc")
 iat = iat %>% 
     mutate(sex = factor(sex, levels = c("m", "f"), ordered = TRUE))
 glimpse(iat)
@@ -69,10 +71,12 @@ iat %>%
 
 
 ```{r}
-iat %>% 
-    group_by(sex) %>% 
-    summarise(media = mean(d_art)) %>% 
-    summarise(male_female_diff = diff(media))
+agrupado = iat %>% 
+        group_by(sex) %>% 
+        summarise(media = mean(d_art))
+    m = agrupado %>% filter(sex == "m") %>% pull(media)
+    f = agrupado %>% filter(sex == "f") %>% pull(media)
+m - f
 ```
 
 
@@ -111,7 +115,7 @@ ci %>%
         ymin = conf.low,
         ymax = conf.high
     )) +
-    geom_errorbar(width = .1) +
+    geom_pointrange() +
     geom_point(size = 3) + 
     labs(x = "Diferença", 
          y = "IAT homens - mulheres")
@@ -130,7 +134,7 @@ p2 = ci %>%
         ymin = conf.low,
         ymax = conf.high
     )) +
-    geom_errorbar(width = .1) +
+    geom_pointrange() +
     geom_point(size = 3) + 
     ylim(-1, 1) + 
     labs(x = "Diferença", 
@@ -142,3 +146,12 @@ grid.arrange(p1, p2, ncol = 2)
 
 ### Conclusão
 
+Em média, as mulheres que participaram do experimento tiveram uma associação implícita (medida pelo IAT) com a matemárica **positiva/negativa** e **fraca/média/forte** (média XXX, desv. padrão YYY, N = ZZZ). Homens tiveram uma associação **positiva/negativa** com a matemática, portanto **maior/menor** que a das mulheres (média , desv. padrão, N = ). Houve portanto uma **grande/considerável/pequena** diferença entre homens e mulheres (diferença das médias XXXX, 95% CI [CCC, DDD]). A partir desta amostra, estimamos que...
+
+--- 
+*Exemplos de possíveis conclusões para completar*
+
+  * mulheres têm uma associação negativa consideravelmente mais forte, com uma diferença que provavelmente está entre 0.6 e 1.0 ponto na escala IAT, o suficiente para diferenciar uma associação neutra de uma muito forte contra a matemática.
+  * mulheres têm uma associação negativa mais forte, porém não é claro se essa diferença é grande, moderada ou pequena. É necessário coletar mais dados para determinar se a diferença é relevante ou negligenciável. 
+  * mulheres podem ter um associação negativa forte, pode não haver diferença entre sexos ou homens podem ter atitudes negativas um pouco mais fortes ou moderadamente mais fortes. 
+  * pode não haver uma diferença entre sexos, ou se ela existir, ela provavelmente é pequena em qualquer das direções. 

@@ -1,6 +1,5 @@
 # Introdução à inferência estatística 
 
-Usamos os dados de https://osf.io/nqg97/
+Usamos os dados de um experimento replicado em 30 e poucos laboratórios pelo mundo. O experimento está descrito [aqui](https://osf.io/wx7ck/) e o link direto para os dados originais [é esse](https://osf.io/nqg97/). Nós usamos uma versão tratada [disponível aqui](https://github.com/rcalinjageman/New_Stats_Teaching_Resources/tree/dae9981eb9a7bc373501a4ff9477498ee466ceac/workshop%20data/two_groups%20-%20iat/iat_data%20_csv) e criada por Robert J Calin-Jageman e colegas para o Teaching the New Statistics workshop.
 
-
-
+O estudo do 1o link replica diversos experimentos da psicologia. O que usamos aqui é: "Sex differences in implicit math attitudes (Nosek,Banaji, & Greenwald, 2002).As a possible account for the sex gap in participation in science and math, Nosek and colleagues (2002) found that women had more negative implicit attitudes toward math compared to arts than men did in two studies of Yale undergraduates. Participants completed four Implicit Association Tests (IATs) in random order, one of which measured associations of math and arts with positivity and negativity. The replication simplified the design for length to be just a single IAT."
