@@ -73,10 +73,6 @@ iats %>%
 
 
 ```{r}
-agrupado = iats %>% 
-        group_by(referrer, sex) %>% 
-        summarise(media = mean(d_art))
-
 theta1 <- function(d, s) {
     m = mean(d[s == "m"])
     f = mean(d[s == "f"])

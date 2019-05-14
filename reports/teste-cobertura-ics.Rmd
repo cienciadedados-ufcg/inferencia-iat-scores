@@ -1,0 +1,154 @@
+---
+title: "Análise de uma replicação"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(broom)
+library(ggbeeswarm)
+library(gridExtra)
+theme_set(theme_bw())
+
+knitr::opts_chunk$set(tidy = FALSE,
+                      fig.width = 6,
+                      fig.height = 5)
+
+```
+
+# Sobre IAT
+
+IAT: 0.15, 0.35, and 0.65 are considered small, medium, and large level of bias for individual scores.
+
+Positive means bias towards arts / against Math.
+
+# Dados de todos os labs juntos
+
+```{r}
+iats =
+    list.files(here::here("data"), pattern = "*.csv") %>%
+    map_df( ~ read_csv(here::here("data", .), col_types = "cccdc"))
+
+iats = iats %>%
+    mutate(sex = factor(sex, levels = c("m", "f"), ordered = TRUE))
+glimpse(iats)
+```
+
+Presumiremos que esses dados são A POPULAÇÃO.
+
+### Diferença entre IATs na população
+
+```{r}
+agrupado = iats %>% 
+        group_by(sex) %>% 
+        summarise(media = mean(d_art))
+m = agrupado %>% filter(sex == "m") %>% pull(media)
+f = agrupado %>% filter(sex == "f") %>% pull(media)
+diferenca_populacao = m - f
+diferenca_populacao
+```
+
+## 200 amostras
+
+```{r}
+amostras = tibble(amostra = 1:200) %>% 
+    mutate(dados = map(amostra, ~ sample_n(iats, 30))) %>% 
+    unnest(dados) %>% 
+    group_by(amostra) %>% 
+    mutate(n_m = sum(sex == "m"), 
+           n_f = sum(sex == "f")) %>% 
+    filter(n_m >= 10, n_f >= 10) 
+```
+
+
+```{r}
+amostras %>% 
+    filter(amostra <= 16) %>% 
+    ggplot(aes(x = sex, y = d_art)) + 
+    geom_quasirandom(width = .1, size = .7) + 
+    stat_summary(geom = "point", fun.y = "mean", color = "red", size = 2) + 
+    facet_wrap(~ amostra)
+```
+
+```{r}
+theta1 <- function(d, s) {
+    m = mean(d[s == "m"])
+    f = mean(d[s == "f"])
+    m - f
+}
+
+diferencas = amostras %>% 
+    group_by(amostra) %>% 
+    summarise(diff = theta1(d_art, sex)) 
+```
+
+```{r}
+diferencas %>% 
+    ggplot(aes(x = reorder(amostra, diff), y = diff)) + 
+    geom_point() + 
+    coord_flip()
+```
+
+## Um IC a partir de cada amostra
+
+```{r}
+library(boot)
+
+theta <- function(d, i) {
+    agrupado = d %>% 
+        slice(i) %>% 
+        group_by(sex) %>% 
+        summarise(media = mean(d_art))
+    m = agrupado %>% filter(sex == "m") %>% pull(media)
+    f = agrupado %>% filter(sex == "f") %>% pull(media)
+    m - f
+}
+
+nested = amostras %>% 
+    group_by(amostra) %>% 
+    nest(-amostra) 
+    
+boots = nested %>% 
+    mutate(booted = map(data, ~ boot(.x, 
+                                     statistic = theta, 
+                                     R = 100)))
+
+boots = boots %>%
+    mutate(ci = map(
+        booted,
+        ~ tidy(
+            .x,
+            conf.level = .95,
+            conf.method = "basic",
+            conf.int = TRUE
+        )
+    )) %>%
+    unnest(ci)
+
+boots = boots %>% 
+    mutate(contem_parametro = conf.low <= diferenca_populacao &
+               conf.high <= diferenca_populacao)
+
+glimpse(boots)
+```
+
+```{r}
+boots %>%
+    ggplot(aes(
+        x = amostra,
+        y = statistic,
+        ymin = conf.low,
+        ymax = conf.high,
+        color = contem_parametro
+    )) +
+    geom_pointrange(alpha = .8, size = .3) +
+    geom_hline(yintercept = diferenca_populacao, color = "dark blue") +
+    labs(x = "Diferença",
+         y = "IAT homens - mulheres") +
+    coord_flip()  + 
+    scale_color_manual(values = c("grey70", "red"))
+```
+
