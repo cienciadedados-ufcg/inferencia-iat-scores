@@ -80,10 +80,13 @@ m - f
 
 ### Conclusão
 
-Considerando os dados de SUBSTITUA AQUI, em média, as mulheres que participaram do experimento tiveram uma associação implícita (medida pelo IAT) com a matemárica **positiva/negativa** e **fraca/média/forte** (média XXX, desv. padrão YYY, N = ZZZ). Homens tiveram uma associação **positiva/negativa** com a matemática, portanto **maior/menor** que a das mulheres (média , desv. padrão, N = ). Houve portanto uma **grande/considerável/pequena** diferença entre homens e mulheres (diferença das médias XXXX). 
+(Substitua pelo menos tudo em negrito, e reescreva à vontade)
+
+Considerando os dados da **universidade XXX**, as mulheres que participaram do experimento tiveram uma associação implícita (medida pelo IAT) com a matemática **positiva/negativa** e **fraca/média/forte** (média IAT XXX, desv. padrão YYY, N = ZZZ). Homens tiveram uma associação **positiva/negativa** com a matemática e **maior/menor** que a das mulheres (média , desv. padrão, N = ). A partir deste resultado, estimamos que há uma **grande/considerável/pequena** diferença entre homens e mulheres na população de onde esta amostra foi optida (diferença das médias XXXX, IC 95% [XXX, YYY]). **Conclusões interpretando o intervalo**.
 
 --- 
 *Exemplos de possíveis conclusões para completar*
 
   * mulheres têm uma associação negativa consideravelmente mais forte, com uma diferença dee 0.7 na escala IAT, o suficiente para diferenciar uma associação neutra de uma muito forte contra a matemática.
   * mulheres têm uma associação negativa mais forte, porém essa diferença é pequena, e não é relevante na prática. 
+  * mulheres podem ter uma associação negativa muito mais forte ou muito mais fraca que a dos homens; nossos resultados não nos permitem descartar ambas as possibilidade.
