@@ -149,7 +149,8 @@ grid.arrange(p1, p2, ncol = 2)
 
 **Apague esse parágrafo, e no seguinte substitua no mínimo as partes em negrito por texto seu. Pode substituir o quanto quiser**.
 
-Em média, as mulheres que participaram do experimento tiveram uma associação implícita (medida pelo IAT) com a matemática **positiva/negativa** e **fraca/média/forte** (**média XXX, desv. padrão YYY, N = ZZZ**). Homens tiveram uma associação **positiva/negativa** com a matemática, portanto **maior/menor** que a das mulheres (**média XXX , desv. padrão YYY, N = ZZZ**). Houve portanto uma **grande/considerável/pequena/desprezível** diferença entre homens e mulheres (**diferença das médias XXXX, 95% CI [CCC, DDD]**). Os dados de nosso experimento portanto apontam que... **COMPLETE AQUI**.
+Em média, as mulheres que participaram do experimento tiveram uma associação implícita (medida pelo IAT) com a matemática **positiva/negativa** e **fraca/média/forte** (**média XXX, desv. padrão YYY, N = ZZZ**). Homens tiveram uma associação **positiva/negativa** com a matemática, e essa associáção foi **maior/menor** que a das mulheres (**média XXX , desv. padrão YYY, N = ZZZ**). A partir desta amostra, estimamos que há uma **grande/considerável/pequena** diferença entre homens e mulheres na população de onde esta amostra foi optida (diferença das médias XXXX, IC 95% [XXX, YYY]). **Os dados de nosso experimento portanto apontam que... COMPLETE AQUI**.
+
 
 --- 
 *Exemplos de possíveis conclusões para completar*
